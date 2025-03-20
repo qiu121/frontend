@@ -15,7 +15,7 @@ const Settings: ProLayoutProps & {
   fixedHeader: false,
   fixSiderbar: true,
   colorWeak: false,
-  title: '科研管理系统',
+  title: '图书管理系统',
   pwa: true,
   logo: '/logo.svg',
   iconfontUrl: '',

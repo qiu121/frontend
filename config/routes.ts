@@ -41,6 +41,7 @@ export default [
       {
         path: '/system/sampleType',
         name: 'sampleTypeManagement',
+        hideInMenu: true,
         component: './Management/SampleType',
       }
     ],
@@ -51,6 +52,7 @@ export default [
     name: 'management.record',
     icon: 'experiment',
     access: 'AccountManagement',
+    hideInMenu: true,
     component: './Management/Record',
   },
 
@@ -75,7 +77,15 @@ export default [
     name: 'management.record',
     icon: 'experiment',
     access: 'MyProject',
+    hideInMenu: true,
     component: './Record',
+  },
+  {
+    path: '/book',
+    name: 'management.book',
+    icon: 'book',
+    access: 'Book',
+    component: './Book',
   },
   {
     path: '/myRecord/:userId',
@@ -83,6 +93,7 @@ export default [
     hideInMenu: true,
     name: 'management.record.detail',
     component: './Record/detail',
+
   },
 
   {
