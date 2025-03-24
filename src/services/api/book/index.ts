@@ -8,6 +8,14 @@ export async function listBooks(page: { [key: string]: any }) {
   });
 }
 
+/** 处理借阅请求 */
+export async function borrowBook(params: { bookId: string; userId: string; borrowTime: string; returnTime: string }) {
+  return request('/backend/api/books/borrow', {
+    method: 'POST',
+    data: params,
+  });
+}
+
 export async function listRecordByUserId(page: { [key: string]: any }, userId: any) {
   return request(`/backend/api/record/listRecordByUserId/${userId}`, {
     method: 'POST',
