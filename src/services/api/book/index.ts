@@ -9,10 +9,10 @@ export async function listBooks(page: { [key: string]: any }) {
 }
 
 /** 处理借阅请求 */
-export async function borrowBook(params: { bookId: string; userId: string; borrowTime: string; returnTime: string }) {
-  return request('/backend/api/books/borrow', {
+export async function borrowBooks(borrowBody: { [key: string]: any }) {
+  return request('/backend/api/books/borrowBooks', {
     method: 'POST',
-    data: params,
+    data: borrowBody,
   });
 }
 
