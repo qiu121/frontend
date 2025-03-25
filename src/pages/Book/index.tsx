@@ -7,18 +7,19 @@ import type { Dayjs } from 'dayjs';
 import type { ActionType, ProColumns } from '@ant-design/pro-components';
 
 interface BookType {
-  id: string;
+  bookId: string;
   title: string;
   author: string;
   publisher: string;
+  publishDate: string;
   category: string;
   stock: number;
 }
 
 interface BorrowFormValues {
-  id: string;
+  bookId: string;
   borrowTime: Dayjs;
-  returnTime: Dayjs;
+  expectReturnTime: Dayjs;
 }
 
 export default () => {
@@ -98,9 +99,9 @@ export default () => {
     setIsModalOpen(true);
     setModalTitle(`借阅图书 - ${record.title}`);
     form.setFieldsValue({
-      id: record.id,
+      bookId: record.bookId,
       borrowTime: undefined,
-      returnTime: undefined,
+      expectReturnTime: undefined,
     });
   };
 
@@ -108,13 +109,17 @@ export default () => {
   const handleBorrow = async (values: BorrowFormValues) => {
     try {
       const params = {
-        bookId: values.id,
+        bookId: values.bookId,
         userId: currentUser.userId,
         borrowTime: values.borrowTime.format('YYYY-MM-DD'),
-        returnTime: values.returnTime.format('YYYY-MM-DD'),
+        expectReturnTime: values.expectReturnTime.format('YYYY-MM-DD'),
       };
 
-      const response = await bookApi.borrowBook(params);
+      console.log(params);
+      
+      const response = await bookApi.borrowBooks(params);
+
+      
       if (response.code === 200) {
         message.success('借阅成功');
         setIsModalOpen(false);
@@ -136,7 +141,7 @@ export default () => {
   const handleOk = async () => {
     try {
       const values = await form.validateFields();
-      if (values.returnTime.isBefore(values.borrowTime)) {
+      if (values.expectReturnTime.isBefore(values.borrowTime)) {
         message.error('归还时间不能早于借阅时间');
         return;
       }
@@ -171,6 +176,12 @@ export default () => {
       dataIndex: 'publisher',
       align: 'center',
       sorter: (a, b) => a.publisher.localeCompare(b.publisher),
+    },
+    {
+      title: '出版时间',
+      dataIndex: 'publishDate',
+      align: 'center',
+      sorter: (a, b) => a.publishDate.localeCompare(b.publishDate),
     },
     {
       title: '类别',
@@ -273,7 +284,7 @@ export default () => {
         destroyOnClose
       >
         <Form form={form} labelCol={{ span: 6 }} wrapperCol={{ span: 16 }}>
-          <Form.Item name="id" hidden>
+          <Form.Item name="bookId" hidden>
             <Input />
           </Form.Item>
           <Form.Item
@@ -284,8 +295,8 @@ export default () => {
             <DatePicker showTime format="YYYY-MM-DD" style={{ width: '100%' }} />
           </Form.Item>
           <Form.Item
-            label="归还时间"
-            name="returnTime"
+            label="预期归还时间"
+            name="expectReturnTime"
             rules={[{ required: true, message: '请选择归还时间' }]}
           >
             <DatePicker showTime format="YYYY-MM-DD" style={{ width: '100%' }} />
