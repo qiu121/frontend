@@ -29,7 +29,7 @@ export default () => {
   // 定义表格列
   const columns = [
     {
-      title: '借阅时间',
+      title: '操作时间',
       dataIndex: 'createTime',
       align: 'center',
       render: (text: string) => (text ? dayjs(text).format('YYYY-MM-DD HH:mm:ss') : '--'),
