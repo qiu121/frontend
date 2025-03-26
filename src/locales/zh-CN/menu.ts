@@ -15,6 +15,8 @@ export default {
   'menu.management.record.detail': '实验记录详情',
   'menu.management.soilSample': '样本记录详情',
   'menu.management.book': '图书列表',
+  'menu.management.borrow': '我的借阅',
+  'menu.management.borrowManagement': '借阅管理',
 
   'menu.user.about': '用户相关',
   'menu.user.about.center': '用户中心',
