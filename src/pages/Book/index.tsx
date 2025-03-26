@@ -206,6 +206,7 @@ export default () => {
     {
       title: '操作',
       align: 'center',
+      hideInTable: currentUser.role.role === 'admin', // 管理员时隐藏，非管理员时显示
       render: (_, record: BookType) => (
         <Button
           type="primary"

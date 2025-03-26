@@ -87,6 +87,23 @@ export default [
     access: 'Book',
     component: './Book',
   },
+
+  {
+    path: '/myBorrow',
+    name: 'management.borrow',
+    icon: 'read',
+    access: 'MyBorrow',
+    component: './Borrow',
+  },
+
+  {
+    path: '/management/borrow',
+    name: 'management.borrowManagement',
+    icon: 'read',
+    access: 'BorrowManagement',
+    component: './Management/Borrow',
+  },
+
   {
     path: '/myRecord/:userId',
     access: 'MyProject',
