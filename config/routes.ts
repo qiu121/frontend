@@ -95,6 +95,13 @@ export default [
     access: 'MyBorrow',
     component: './Borrow',
   },
+  {
+    path: '/management/book',
+    name: 'management.bookManagement',
+    icon: 'book',
+    access: 'BookManagement',
+    component: './Management/Book',
+  },
 
   {
     path: '/management/borrow',

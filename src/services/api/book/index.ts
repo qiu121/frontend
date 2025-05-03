@@ -16,6 +16,13 @@ export async function borrowBooks(borrowBody: { [key: string]: any }) {
   });
 }
 
+export async function deleteBook(bookId: string ) {
+  return request('/backend/api/books/deleteBook', {
+    method: 'DELETE',
+    params: {bookId}
+  });
+}
+
 export async function listRecordByUserId(page: { [key: string]: any }, userId: any) {
   return request(`/backend/api/record/listRecordByUserId/${userId}`, {
     method: 'POST',

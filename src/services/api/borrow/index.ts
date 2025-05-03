@@ -13,3 +13,17 @@ export async function listBorrowRecord(page: { [key: string]: any }) {
       data: page,
     });
   }
+
+export async function updateBorrowRecord(params: {
+  userId: string;
+  borrowRecordId: string;
+}) {
+  return request(`/backend/api/borrow/updateBorrowRecord?userId=${params.userId}&borrowRecordId=${params.borrowRecordId}`,{
+      method: 'PUT',
+      data: {
+        // actualReturnTime: params.actualReturnTime,
+        status: 2
+      }
+    }
+  );
+}
