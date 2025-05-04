@@ -61,7 +61,7 @@ export default () => {
         setIsModalOpen(false);
         actionRef.current?.reload();
       } else {
-        message.error(response.message || '借阅失败');
+        message.error(response.msg || '借阅失败');
       }
     } catch (error) {
       message.error('借阅操作失败');
@@ -72,7 +72,7 @@ export default () => {
     try {
       const values = await form.validateFields();
       if (values.expectReturnTime.isBefore(values.borrowTime)) {
-        message.error('归还时间不能早于借阅时间');
+        message.warning('归还时间不能早于借阅时间');
         return;
       }
       await handleBorrow(values);
@@ -123,19 +123,13 @@ export default () => {
       dataIndex: 'stock',
       align: 'center',
       sorter: (a, b) => a.stock - b.stock,
-      render: (text: number) => (
-        <span style={{ color: text > 0 ? 'green' : 'red' }}>{text}</span>
-      ),
+      render: (text: number) => <span style={{ color: text > 0 ? 'green' : 'red' }}>{text}</span>,
     },
     {
       title: '操作',
       align: 'center',
       render: (_, record: BookType) => (
-        <Button
-          type="primary"
-          disabled={record.stock <= 0}
-          onClick={() => showBorrowModal(record)}
-        >
+        <Button type="primary" disabled={record.stock <= 0} onClick={() => showBorrowModal(record)}>
           借阅
         </Button>
       ),
@@ -150,11 +144,17 @@ export default () => {
         rowKey="bookId"
         options={{ fullScreen: true, reload: true, setting: true }}
         request={async (params) => {
+          // 始终按 create_time 和 update_time 降序排序，最新数据排在最上面
+          // 优先使用用户操作时传入的 sort，否则使用默认排序
+          // 先判断 params.sort（表格用户点击列头时会自动注入），如果为空则回退到默认的 create_time desc,update_time desc。
+          const { sort: userSort, current: currentPage, pageSize } = params;
+          const sortParam = userSort || 'create_time desc,update_time desc';
           const result = await bookApi.listBooks({
-            currentPage: params.current,
-            pageSize: params.pageSize,
+            currentPage,
+            pageSize,
             title: '',
             author: '',
+            sort: sortParam,
           });
           if (result.code === 200) {
             return {

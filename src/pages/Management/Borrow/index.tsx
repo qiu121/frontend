@@ -1,6 +1,5 @@
 import { ProTable } from '@ant-design/pro-components';
 import React, { useRef } from 'react';
-import { useModel } from '@umijs/max';
 import * as borrowApi from '@/services/api/borrow';
 import { Tag } from 'antd';
 import type { ProColumns, ActionType } from '@ant-design/pro-components';
@@ -20,12 +19,10 @@ interface BorrowRecord {
 const statusMap = {
   1: { text: '借阅中', color: 'processing' },
   2: { text: '已归还', color: 'success' },
-  3: { text: '逾期', color: 'error' },
+  3: { text: '已逾期', color: 'error' },
 };
 
 export default () => {
-  const { initialState } = useModel('@@initialState');
-  const currentUser = initialState?.currentUser || {};
   const actionRef = useRef<ActionType>();
 
   // 表格列定义，仅用户名和书名可搜索
@@ -58,27 +55,24 @@ export default () => {
       title: '借阅时间',
       dataIndex: 'borrowTime',
       align: 'center',
-      render: (text) => text ? dayjs(text).format('YYYY-MM-DD') : '--',
-      sorter: (a, b) =>
-        dayjs(a.borrowTime).unix() - dayjs(b.borrowTime).unix(),
+      render: (text) => (text ? dayjs(text).format('YYYY-MM-DD') : '----'),
+      sorter: (a, b) => dayjs(a.borrowTime).unix() - dayjs(b.borrowTime).unix(),
       search: false,
     },
     {
       title: '预期归还时间',
       dataIndex: 'expectReturnTime',
       align: 'center',
-      render: (text) => text ? dayjs(text).format('YYYY-MM-DD') : '--',
-      sorter: (a, b) =>
-        dayjs(a.expectReturnTime).unix() - dayjs(b.expectReturnTime).unix(),
+      render: (text) => (text ? dayjs(text).format('YYYY-MM-DD') : '----'),
+      sorter: (a, b) => dayjs(a.expectReturnTime).unix() - dayjs(b.expectReturnTime).unix(),
       search: false,
     },
     {
       title: '实际归还时间',
       dataIndex: 'actualReturnTime',
       align: 'center',
-      render: (text) => (text && dayjs(text).isValid() ? dayjs(text).format('YYYY-MM-DD') : '--'),
-      sorter: (a, b) =>
-        dayjs(a.actualReturnTime).unix() - dayjs(b.actualReturnTime).unix(),
+      render: (text) => (text && dayjs(text).isValid() ? dayjs(text).format('YYYY-MM-DD') : '----'),
+      sorter: (a, b) => dayjs(a.actualReturnTime).unix() - dayjs(b.actualReturnTime).unix(),
       search: false,
     },
     {
@@ -105,13 +99,15 @@ export default () => {
       columns={columns}
       rowKey="id"
       request={async (params) => {
-        // 解构分页和搜索参数
-        const { current, pageSize, userName, bookName } = params;
+        // 解构分页、筛选和排序参数
+        const { current, pageSize, userName, bookName, sort: userSort } = params;
+        const defaultSort = 'create_time desc,update_time desc';
         const query = {
           currentPage: current,
           pageSize,
           userName: userName || undefined,
           bookName: bookName || undefined,
+          sort: userSort || defaultSort,
         };
         const result = await borrowApi.listBorrowRecord(query);
         if (result.code === 200) {
@@ -121,7 +117,11 @@ export default () => {
         return { data: [], total: 0, success: false };
       }}
       search={{ labelWidth: 'auto', defaultCollapsed: false }}
-      pagination={{ showSizeChanger: true, pageSizeOptions: ['10', '20', '50'], defaultPageSize: 10 }}
+      pagination={{
+        showSizeChanger: true,
+        pageSizeOptions: ['10', '20', '50'],
+        defaultPageSize: 10,
+      }}
       options={{ reload: true, density: true, setting: true }}
     />
   );
