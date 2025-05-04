@@ -16,10 +16,31 @@ export async function borrowBooks(borrowBody: { [key: string]: any }) {
   });
 }
 
-export async function deleteBook(bookId: string ) {
+export async function deleteBook(bookId: string) {
   return request('/backend/api/books/deleteBook', {
     method: 'DELETE',
-    params: {bookId}
+    params: { bookId },
+  });
+}
+
+export async function batchDelete(bookIds: string[]) {
+  return request('/backend/api/books/batchDeleteBooks', {
+    method: 'DELETE',
+    data: bookIds,
+  });
+}
+
+export async function addBook(book: any) {
+  return request('/backend/api/books/addBook', {
+    method: 'POST',
+    data: book,
+  });
+}
+
+export async function updateBook(book: any) {
+  return request('/backend/api/books/updateBook', {
+    method: 'PUT',
+    data: book,
   });
 }
 

@@ -19,13 +19,12 @@ interface BorrowRecord {
 const statusMap = {
   1: { text: '借阅中', color: 'processing' },
   2: { text: '已归还', color: 'success' },
-  3: { text: '逾期', color: 'error' },
+  3: { text: '已逾期', color: 'error' },
 };
 
 export default () => {
   const { initialState } = useModel('@@initialState');
   const currentUser = initialState?.currentUser || {};
-  const [selectedRecordId, setSelectedRecordId] = useState('');
   const [actionReload, setActionReload] = useState<number>(0);
   const actionRef = useRef<ActionType>();
 
@@ -38,9 +37,9 @@ export default () => {
 
       if (result.code === 200) {
         message.success('归还成功');
-        setActionReload(prev => prev + 1);
+        setActionReload((prev) => prev + 1);
       } else {
-        message.error(result.message || '归还失败');
+        message.error(result.msg || '归还失败');
       }
     } catch (error) {
       console.error('归还请求失败:', error);
@@ -54,11 +53,9 @@ export default () => {
       title: '操作时间',
       dataIndex: 'createTime',
       align: 'center',
-      render: (text) =>
-        text ? dayjs(text as string).format('YYYY-MM-DD HH:mm:ss') : '--',
+      render: (text) => (text ? dayjs(text as string).format('YYYY-MM-DD HH:mm:ss') : '----'),
       search: false,
-      sorter: (a, b) =>
-        dayjs(a.createTime).unix() - dayjs(b.createTime).unix(),
+      sorter: (a, b) => dayjs(a.createTime).unix() - dayjs(b.createTime).unix(),
     },
     {
       title: '书籍名称',
@@ -78,7 +75,7 @@ export default () => {
       title: '借阅时间',
       dataIndex: 'borrowTime',
       align: 'center',
-      render: (text) => (text ? dayjs(text as string).format('YYYY-MM-DD') : '--'),
+      render: (text) => (text ? dayjs(text as string).format('YYYY-MM-DD') : '----'),
       search: false,
       sorter: (a, b) => dayjs(a.borrowTime).unix() - dayjs(b.borrowTime).unix(),
     },
@@ -86,10 +83,9 @@ export default () => {
       title: '预期归还时间',
       dataIndex: 'expectReturnTime',
       align: 'center',
-      render: (text) => (text ? dayjs(text as string).format('YYYY-MM-DD') : '--'),
+      render: (text) => (text ? dayjs(text as string).format('YYYY-MM-DD') : '----'),
       search: false,
-      sorter: (a, b) =>
-        dayjs(a.expectReturnTime).unix() - dayjs(b.expectReturnTime).unix(),
+      sorter: (a, b) => dayjs(a.expectReturnTime).unix() - dayjs(b.expectReturnTime).unix(),
     },
     {
       title: '实际归还时间',
@@ -97,17 +93,13 @@ export default () => {
       align: 'center',
       render: (text) => {
         const value = text as string | null;
-        if (!value || value === '-' || !dayjs(value).isValid()) return '--';
+        if (!value || value === '-' || !dayjs(value).isValid()) return '----';
         return dayjs(value).format('YYYY-MM-DD');
       },
       search: false,
       sorter: (a, b) => {
-        const ta = dayjs(a.actualReturnTime).isValid()
-          ? dayjs(a.actualReturnTime).unix()
-          : 0;
-        const tb = dayjs(b.actualReturnTime).isValid()
-          ? dayjs(b.actualReturnTime).unix()
-          : 0;
+        const ta = dayjs(a.actualReturnTime).isValid() ? dayjs(a.actualReturnTime).unix() : 0;
+        const tb = dayjs(b.actualReturnTime).isValid() ? dayjs(b.actualReturnTime).unix() : 0;
         return ta - tb;
       },
     },
@@ -139,7 +131,7 @@ export default () => {
       render: (_, record) => (
         <Button
           type="primary"
-          disabled={record.status === 2}
+          disabled={record.status === 2 || record.status === 3}
           onClick={() => {
             Modal.confirm({
               title: '确认归还',
@@ -147,7 +139,6 @@ export default () => {
               okText: '确认',
               cancelText: '取消',
               onOk: () => {
-                setSelectedRecordId(record.borrowRecordId);
                 handleReturn(record.borrowRecordId);
               },
             });
@@ -171,7 +162,7 @@ export default () => {
             let data = result.data.result;
             if (params.bookName) {
               data = data.filter((item: BorrowRecord) =>
-                item.bookName.toLowerCase().includes(params.bookName.toLowerCase())
+                item.bookName.toLowerCase().includes(params.bookName.toLowerCase()),
               );
             }
             return { data, success: true };
