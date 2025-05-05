@@ -1,6 +1,4 @@
-﻿import icons from "@/.umi/plugin-layout/icons";
-
-/**
+﻿/**
  * @name umi 的路由配置
  * @description 只支持 path,component,routes,redirect,wrappers,name,icon 的配置
  * @param path  path 只支持两种占位符配置，第一种是动态参数 :id 的形式，第二种是 * 通配符，通配符只能出现路由字符串的最后。
@@ -38,48 +36,9 @@ export default [
         name: 'accountManagement',
         component: './System/UserInfo',
       },
-      {
-        path: '/system/sampleType',
-        name: 'sampleTypeManagement',
-        hideInMenu: true,
-        component: './Management/SampleType',
-      }
     ],
   },
 
-  {
-    path: '/management/record',
-    name: 'management.record',
-    icon: 'experiment',
-    access: 'AccountManagement',
-    hideInMenu: true,
-    component: './Management/Record',
-  },
-
-  {
-    path: '/management/record/:userId',
-    access: 'AccountManagement',
-    name: 'management.record.detail',
-    hideInMenu: true,
-    component: './Management/Record/detail',
-  },
-
-  {
-    path: '/management/record/sample/:recordId',
-    access: 'AccountManagement',
-    name: 'management.soilSample',
-    hideInMenu: true,
-    component: './Management/SoilSample',
-  },
-
-  {
-    path: '/myRecord',
-    name: 'management.record',
-    icon: 'experiment',
-    access: 'MyProject',
-    hideInMenu: true,
-    component: './Record',
-  },
   {
     path: '/book',
     name: 'management.book',
@@ -112,29 +71,13 @@ export default [
   },
 
   {
-    path: '/myRecord/:userId',
-    access: 'MyProject',
-    hideInMenu: true,
-    name: 'management.record.detail',
-    component: './Record/detail',
-
-  },
-
-  {
-    path: '/myRecord/sample/:recordId',
-    access: 'MyProject',
-    hideInMenu: true,
-    name: 'management.soilSample',
-    component: './SoilSample',
-  },
-  {
     path: '/user',
     name: 'user.about',
-    icon:'user',
+    icon: 'user',
     routes: [
       {
         name: 'center',
-        access: "user",
+        access: 'user',
         path: '/user/center',
         component: './User/Center',
       },

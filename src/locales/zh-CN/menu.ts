@@ -7,13 +7,7 @@ export default {
   'menu.dataManagement': '数据管理',
   'menu.systemManagement': '系统管理',
   'menu.systemManagement.accountManagement': '账号管理',
-  'menu.systemManagement.sampleTypeManagement': '样本管理',
 
-
-  'menu.management.conference': '会议管理',
-  'menu.management.record': '实验记录管理',
-  'menu.management.record.detail': '实验记录详情',
-  'menu.management.soilSample': '样本记录详情',
   'menu.management.book': '图书列表',
   'menu.management.borrow': '我的借阅',
   'menu.management.borrowManagement': '借阅管理',
