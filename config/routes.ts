@@ -15,7 +15,7 @@ export default [
     path: '/home',
     name: 'welcome',
     icon: 'HomeOutlined',
-    component: './Welcome'
+    component: './Welcome',
   },
 
   {
@@ -71,17 +71,11 @@ export default [
   },
 
   {
-    path: '/user',
-    name: 'user.about',
+    path: '/userInfo',
+    name: 'userInfo',
     icon: 'user',
-    routes: [
-      {
-        name: 'center',
-        access: 'user',
-        path: '/user/center',
-        component: './User/Center',
-      },
-    ],
+    access: 'UserInfo',
+    component: './User',
   },
 
   {

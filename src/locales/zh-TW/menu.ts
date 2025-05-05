@@ -13,8 +13,6 @@ export default {
   'menu.management.borrowManagement': '借閱管理',
   'menu.management.bookManagement': '圖書管理',
 
-  'menu.user.about': '使用者相關',
-  'menu.user.about.center': '使用者中心',
 
   'menu.dataManagement.approval': '審批',
   'menu.dataManagement.declaration': '立項',

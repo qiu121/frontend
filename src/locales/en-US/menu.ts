@@ -13,8 +13,6 @@ export default {
   'menu.management.borrowManagement': 'Loan Management',
   'menu.management.bookManagement': 'Book Management',
 
-  'menu.user.about': 'User',
-  'menu.user.about.center': 'User Center',
 
   'menu.dataManagement.approval': 'Approval',
   'menu.dataManagement.declaration': 'Declaration',
