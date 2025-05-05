@@ -14,14 +14,6 @@ export default {
   'menu.management.bookManagement': '图书管理',
 
 
-  'menu.user.about': '用户相关',
-  'menu.user.about.center': '用户中心',
-
-
-
-
-
-
   'menu.dataManagement.approval': 'approval',
   'menu.dataManagement.declaration': '立项',
   'menu.dataManagement.conclusion': 'conclusion',
