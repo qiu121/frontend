@@ -91,43 +91,65 @@ export default () => {
       title: '书名',
       dataIndex: 'title',
       align: 'center',
+      search: true,
+      fieldProps: {
+        placeholder: '请输入书名',
+        allowClear: true,
+        onKeyDown: (e) => {
+          if (e.key === 'Enter') {
+            actionRef.current?.reload();
+          }
+        },
+      },
       sorter: (a, b) => a.title.localeCompare(b.title),
     },
     {
       title: '作者',
       dataIndex: 'author',
       align: 'center',
+      search: true,
       sorter: (a, b) => a.author.localeCompare(b.author),
     },
     {
       title: '出版社',
       dataIndex: 'publisher',
       align: 'center',
+      search: true,
       sorter: (a, b) => a.publisher.localeCompare(b.publisher),
     },
     {
       title: '出版时间',
       dataIndex: 'publishDate',
       align: 'center',
+      search: false,
       sorter: (a, b) => a.publishDate.localeCompare(b.publishDate),
     },
     {
       title: '类别',
       dataIndex: 'category',
       align: 'center',
-      render: (text: string) => <Tag color="success">{text}</Tag>,
+      search: false,
+      render: (text) => <Tag color="success">{text}</Tag>,
       sorter: (a, b) => a.category.localeCompare(b.category),
-    },
+    },    
     {
       title: '库存',
       dataIndex: 'stock',
       align: 'center',
+      search: false,
       sorter: (a, b) => a.stock - b.stock,
-      render: (text: number) => <span style={{ color: text > 0 ? 'green' : 'red' }}>{text}</span>,
+      /* 
+        在 ProTable 的 render 函数中：
+        第一个参数 _ 对应的是 text: ReactNode（实际数据）
+        第二个参数 text 对应的是 record: BookType（整行数据）
+        这里的 render可以不用声明类型，TypeScript 可以根据 ProColumns<BookType>、dataIndex 来推导
+      */
+      render: (text) => <span style={{ color: text as number > 0 ? 'green' : 'red' }}>{text}</span>,
     },
     {
       title: '操作',
       align: 'center',
+      search: false,
       render: (_, record: BookType) => (
         <Button type="primary" disabled={record.stock <= 0} onClick={() => showBorrowModal(record)}>
           借阅
@@ -157,16 +179,36 @@ export default () => {
             sort: sortParam,
           });
           if (result.code === 200) {
+            let data = result.data.result.records;
+            let total = result.data.result.total;
+            if (params.title) {
+              data = data.filter((item: BookType) =>
+                item.title.toLowerCase().includes(params.title.toLowerCase()),
+              );
+            }
+            if (params.author) {
+              data = data.filter((item: BookType) =>
+                item.author.toLowerCase().includes(params.author.toLowerCase()),
+              );
+            }
+            if (params.publisher) {
+              data = data.filter((item: BookType) =>
+                item.publisher.toLowerCase().includes(params.publisher.toLowerCase()),
+              );
+            }
             return {
-              data: result.data.result.records,
-              total: result.data.result.total,
+              data,
+              total,
               success: true,
             };
           }
           return { data: [], total: 0, success: false };
         }}
         pagination={{ showSizeChanger: true }}
-        search={false}
+        search={{
+          labelWidth: 'auto',
+          defaultCollapsed: false,
+        }}
       />
 
       <Modal

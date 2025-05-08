@@ -121,31 +121,36 @@ export default () => {
       title: '书名',
       dataIndex: 'title',
       align: 'center',
+      search: true,
       sorter: (a, b) => a.title.localeCompare(b.title),
     },
     {
       title: '作者',
       dataIndex: 'author',
       align: 'center',
+      search: true,
       sorter: (a, b) => a.author.localeCompare(b.author),
     },
     {
       title: '出版社',
       dataIndex: 'publisher',
       align: 'center',
+      search: true,
       sorter: (a, b) => a.publisher.localeCompare(b.publisher),
     },
     {
       title: '出版时间',
       dataIndex: 'publishDate',
       align: 'center',
+      search: false,
       sorter: (a, b) => dayjs(a.publishDate).unix() - dayjs(b.publishDate).unix(),
-      render: (text) => (text && dayjs(text).isValid() ? dayjs(text).format('YYYY-MM-DD') : '----'),
+      render: (text) => (text && dayjs(text as string).isValid() ? dayjs(text as string).format('YYYY-MM-DD') : '----'),
     },
     {
       title: '类别',
       dataIndex: 'category',
       align: 'center',
+      search: false,
       sorter: (a, b) => a.category.localeCompare(b.category),
       render: (text) => <Tag color="success">{text}</Tag>,
     },
@@ -153,12 +158,14 @@ export default () => {
       title: '库存',
       dataIndex: 'stock',
       align: 'center',
+      search: false,
       sorter: (a, b) => a.stock - b.stock,
-      render: (text) => <span style={{ color: text > 0 ? 'green' : 'red' }}>{text}</span>,
+      render: (text) => <span style={{ color: text as number > 0 ? 'green' : 'red' }}>{text}</span>,
     },
     {
       title: '操作',
       align: 'center',
+      search: false,
       render: (_, record) => (
         <>
           <Button type="primary" style={{ marginRight: 8 }} onClick={() => openEdit(record)}>
@@ -207,16 +214,37 @@ export default () => {
               pageSize,
               sort: sortParam,
             });
-            return result.code === 200
-              ? {
-                  data: result.data.result.records,
-                  total: result.data.result.total,
-                  success: true,
-                }
-              : { data: [], total: 0, success: false };
+            if (result.code === 200) {
+              let data = result.data.result.records;
+              let total = result.data.result.total;
+              if (params.title) {
+                data = data.filter((item: BookType) =>
+                  item.title.toLowerCase().includes(params.title.toLowerCase()),
+                );
+              }
+              if (params.author) {
+                data = data.filter((item: BookType) =>
+                  item.author.toLowerCase().includes(params.author.toLowerCase()),
+                );
+              }
+              if (params.publisher) {
+                data = data.filter((item: BookType) =>
+                  item.publisher.toLowerCase().includes(params.publisher.toLowerCase()),
+                );
+              }
+              return {
+                data,
+                total,
+                success: true
+              }
+            }
+            return { data: [], total: 0, success: false};
           }}
           pagination={{ showSizeChanger: true }}
-          search={false}
+          search={{
+            labelWidth: 'auto',
+            defaultCollapsed: false
+          }}
         />
       </ProCard>
 
