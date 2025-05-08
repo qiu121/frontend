@@ -117,7 +117,7 @@ export default () => {
       filters: [
         { text: '借阅中', value: 1 },
         { text: '已归还', value: 2 },
-        { text: '逾期', value: 3 },
+        { text: '已逾期', value: 3 },
       ],
       onFilter: (value, record) => record.status === value,
       search: false,

@@ -32,9 +32,10 @@ export default () => {
       dataIndex: 'userName',
       align: 'center',
       sorter: (a, b) => a.userName.localeCompare(b.userName),
-      search: {
-        transform: (value) => ({ userName: value }),
-      },
+      search: true,
+      // search: {
+      //   transform: (value) => ({ userName: value }),
+      // },
       fieldProps: {
         onKeyDown: (e) => e.key === 'Enter' && actionRef.current?.reload(),
       },
@@ -44,9 +45,7 @@ export default () => {
       dataIndex: 'bookName',
       align: 'center',
       sorter: (a, b) => a.bookName.localeCompare(b.bookName),
-      search: {
-        transform: (value) => ({ bookName: value }),
-      },
+      search: true,
       fieldProps: {
         onKeyDown: (e) => e.key === 'Enter' && actionRef.current?.reload(),
       },
@@ -55,7 +54,7 @@ export default () => {
       title: '借阅时间',
       dataIndex: 'borrowTime',
       align: 'center',
-      render: (text) => (text ? dayjs(text).format('YYYY-MM-DD') : '----'),
+      render: (text) => (text ? dayjs(text as string).format('YYYY-MM-DD') : '----'),
       sorter: (a, b) => dayjs(a.borrowTime).unix() - dayjs(b.borrowTime).unix(),
       search: false,
     },
@@ -63,7 +62,7 @@ export default () => {
       title: '预期归还时间',
       dataIndex: 'expectReturnTime',
       align: 'center',
-      render: (text) => (text ? dayjs(text).format('YYYY-MM-DD') : '----'),
+      render: (text) => (text ? dayjs(text as string).format('YYYY-MM-DD') : '----'),
       sorter: (a, b) => dayjs(a.expectReturnTime).unix() - dayjs(b.expectReturnTime).unix(),
       search: false,
     },
@@ -71,7 +70,7 @@ export default () => {
       title: '实际归还时间',
       dataIndex: 'actualReturnTime',
       align: 'center',
-      render: (text) => (text && dayjs(text).isValid() ? dayjs(text).format('YYYY-MM-DD') : '----'),
+      render: (text) => (text && dayjs(text as string).isValid() ? dayjs(text as string).format('YYYY-MM-DD') : '----'),
       sorter: (a, b) => dayjs(a.actualReturnTime).unix() - dayjs(b.actualReturnTime).unix(),
       search: false,
     },
@@ -86,7 +85,7 @@ export default () => {
       filters: [
         { text: '借阅中', value: 1 },
         { text: '已归还', value: 2 },
-        { text: '逾期', value: 3 },
+        { text: '已逾期', value: 3 },
       ],
       onFilter: true,
       search: false,
@@ -111,8 +110,20 @@ export default () => {
         };
         const result = await borrowApi.listBorrowRecord(query);
         if (result.code === 200) {
-          const { records, total } = result.data.result;
-          return { data: records, total, success: true };
+          // const { records, total } = result.data.result;
+          let data = result.data.result.records;
+          let total = result.data.result.total;
+          if (params.userName) {
+            data = data.filter((item: BorrowRecord) =>
+              item.userName.toLowerCase().includes(params.userName.toLowerCase()),
+            );
+          }
+          if (params.bookName) {
+            data = data.filter((item: BorrowRecord) =>
+              item.bookName.toLowerCase().includes(params.bookName.toLowerCase()),
+            );
+          }
+          return { data, total, success: true };
         }
         return { data: [], total: 0, success: false };
       }}
