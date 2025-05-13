@@ -1,13 +1,13 @@
 import { ProTable } from '@ant-design/pro-components';
-import React, { useRef } from 'react';
+import React, { useRef, useState } from 'react';
 import * as borrowApi from '@/services/api/borrow';
-import { Tag } from 'antd';
+import { Tag, Button, Modal, message } from 'antd';
 import type { ProColumns, ActionType } from '@ant-design/pro-components';
 import dayjs from 'dayjs';
 
 // 定义借阅记录类型
 interface BorrowRecord {
-  id: string;
+  borrowRecordId: string;
   userName: string;
   bookName: string;
   borrowTime: string;
@@ -24,8 +24,56 @@ const statusMap = {
 
 export default () => {
   const actionRef = useRef<ActionType>();
+  const [selectedRowKeys, setSelectedRowKeys] = useState<string[]>([]);
 
-  // 表格列定义，仅用户名和书名可搜索
+  /** 单条删除 */
+  const handleDelete = (borrowRecordId: string) => {
+    Modal.confirm({
+      title: '确认删除',
+      content: '确定要删除该借阅记录吗？',
+      okText: '删除',
+      cancelText: '取消',
+      onOk: async () => {
+        try {
+          const res = await borrowApi.removeBorrowRecord(borrowRecordId);
+          if (res.code === 200) {
+            message.success('删除成功');
+            actionRef.current?.reload();
+            setSelectedRowKeys([]);
+          } else {
+            message.error(res.message || '删除失败');
+          }
+        } catch {
+          message.error('删除请求失败');
+        }
+      },
+    });
+  };
+
+  /** 批量删除 */
+  const handleBatchDelete = () => {
+    Modal.confirm({
+      title: '确认批量删除',
+      content: `确定要删除选中的 ${selectedRowKeys.length} 条记录吗？`,
+      okText: '删除',
+      cancelText: '取消',
+      onOk: async () => {
+        try {
+          const res = await borrowApi.batchRemoveBorrowRecord(selectedRowKeys);
+          if (res.code === 200) {
+            message.success('批量删除成功');
+            actionRef.current?.reload();
+            setSelectedRowKeys([]);
+          } else {
+            message.error(res.message || '批量删除失败');
+          }
+        } catch {
+          message.error('批量删除请求失败');
+        }
+      },
+    });
+  };
+
   const columns: ProColumns<BorrowRecord>[] = [
     {
       title: '用户名',
@@ -87,16 +135,40 @@ export default () => {
         { text: '已归还', value: 2 },
         { text: '已逾期', value: 3 },
       ],
-      onFilter: true,
+      onFilter: (value, record) => record.status === value,
       search: false,
+    },
+    {
+      title: '操作',
+      dataIndex: 'actions',
+      align: 'center',
+      search: false,
+      render: (_, record) => (
+        <Button type="primary" danger onClick={() => handleDelete(record.borrowRecordId)}>
+          删除
+        </Button>
+      ),
     },
   ];
 
   return (
     <ProTable<BorrowRecord>
       actionRef={actionRef}
+      rowKey="borrowRecordId"               // ← 这里改成 borrowRecordId
       columns={columns}
-      rowKey="id"
+      rowSelection={{
+        selectedRowKeys,
+        onChange: (keys) => setSelectedRowKeys(keys as string[]),
+      }}
+      toolBarRender={() => [
+        <Button
+          key="batchDelete"
+          disabled={selectedRowKeys.length === 0}
+          onClick={handleBatchDelete}
+        >
+          批量删除
+        </Button>,
+      ]}
       request={async (params) => {
         // 解构分页、筛选和排序参数
         const { current, pageSize, userName, bookName, sort: userSort } = params;
@@ -112,7 +184,8 @@ export default () => {
         if (result.code === 200) {
           // const { records, total } = result.data.result;
           let data = result.data.result.records;
-          let total = result.data.result.total;
+          const total = result.data.result.total;
+          // 二次过滤
           if (params.userName) {
             data = data.filter((item: BorrowRecord) =>
               item.userName.toLowerCase().includes(params.userName.toLowerCase()),
