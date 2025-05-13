@@ -26,3 +26,17 @@ export async function updateBorrowRecord(params: {
     },
   });
 }
+
+export async function removeBorrowRecord(borrowRecordId: string) {
+  return request('/backend/api/borrow/removeBorrowRecord', {
+    method: 'DELETE',
+    params: { borrowRecordId },
+  });
+}
+
+export async function batchRemoveBorrowRecord(borrowRecordIdList: string[]) {
+  return request('/backend/api/borrow/batchRemoveBorrowRecord', {
+    method: 'DELETE',
+    data: borrowRecordIdList,
+  });
+}
